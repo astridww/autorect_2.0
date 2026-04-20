@@ -1,7 +1,7 @@
 import HttpResponses from "../traits/HttpResponses.js"; // manejador de respuestas HTTP
 import { attemptLogin } from "../services/loginService.js"; // lógica de login
 import { clearAuthCookies, setAuthCookies } from "../shared/cookies.js"; // cookies de autenticación
-import {
+import { // funciones para obtener tokens de la request
   getAccessTokenFromRequest,
   getRefreshTokenFromRequest,
 } from "../shared/requestTokens.js";
@@ -46,14 +46,13 @@ loginController.login = async (req, res) => {
 };
 
 loginController.logout = async (req, res) => {
-  try {
+  try { // revocamos los tokens de acceso y refresh obtenidos de la request y limpiamos las cookies de autenticación
     revokeToken(getAccessTokenFromRequest(req));
     revokeToken(getRefreshTokenFromRequest(req));
     clearAuthCookies(res);
-
-    return HttpResponses.ok(res, null, "Logout exitoso");
+    return HttpResponses.ok(res, null, "Logout exitoso"); // respondemos con un mensaje de éxito
   } catch (error) {
-    return HttpResponses.serverError(
+    return HttpResponses.serverError( // manejamos errores inesperados con un 500
       res,
       "Error interno del servidor",
       error.message,

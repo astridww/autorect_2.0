@@ -1,8 +1,8 @@
 import HttpResponses from "../traits/HttpResponses.js"; // manejador de respuestas HTTP
 import { verifyToken, signAccessToken, signRefreshToken } from "../shared/jwt.js"; // manejo de JWT
 import { setAuthCookies } from "../shared/cookies.js"; // manejo de cookies
-import { getAccessTokenFromRequest } from "../shared/requestTokens.js";
-import { isTokenRevoked } from "../shared/revokedTokens.js";
+import { getAccessTokenFromRequest } from "../shared/requestTokens.js"; // función para obtener el token de acceso de la request
+import { isTokenRevoked } from "../shared/revokedTokens.js"; // función para verificar si un token ha sido revocado
 
 // Middleware para proteger rutas que requieren autenticación
 const authRequired = (req, res, next) => {

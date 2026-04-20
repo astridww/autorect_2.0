@@ -3,9 +3,9 @@ import { config } from "../../config.js";
 
 //TTLs centralizados
 export const TTL = {
-  ACCESS:       "5m",           // Token de acceso: corto, renovable con refresh
-  REFRESH:      "5m",           // Token de renovación: expira igual que el token de acceso
-  VERIFICATION: "5m",           // Token de verificación de registro: expira rápido
+  ACCESS:       "5m", // Token de acceso: corto, renovable con refresh
+  REFRESH:      "5m", // Token de renovación: expira igual que el token de acceso
+  VERIFICATION: "5m", // Token de verificación de registro: expira rápido
 };
 
 //Firma

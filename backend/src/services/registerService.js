@@ -1,9 +1,9 @@
-import crypto from "crypto";
-import bcryptjs from "bcryptjs";
-import userModel from "../models/users.js";
-import sendEmail from "./emailService.js";
-import { signVerificationToken, verifyToken } from "../shared/jwt.js";
-import { config } from "../../config.js";
+import crypto from "crypto"; // para generar códigos de verificación aleatorios
+import bcryptjs from "bcryptjs"; // para hashear contraseñas
+import userModel from "../models/users.js"; // modelo de usuarios para interactuar con la base de datos
+import sendEmail from "./emailService.js"; // función para enviar correos electrónicos
+import { signVerificationToken, verifyToken } from "../shared/jwt.js"; // funciones para firmar y verificar tokens de verificación
+import { config } from "../../config.js"; // configuración de la aplicación, incluyendo datos de correo y URL del frontend
 
 /**
  * Inicia el flujo de registro:
@@ -77,16 +77,17 @@ export const confirmRegistration = async (verificationCodeRequest, registrationT
     return { ok: false, status: "wrong_code", message: "Código de verificación inválido" };
   }
 
-  const newUser = new userModel({
-    name,
-    lastName,
-    birthDate,
-    email,
-    password,
-    userType: userType || "usuario",
-    isVerified: false,
+  const newUser = new userModel({ // creamos el nuevo usuario con los datos del token decodificado
+    name, // el nombre del usuario
+    lastName, // el apellido del usuario
+    birthDate, // la fecha de nacimiento del usuario
+    email, // el correo electrónico del usuario
+    password, // la contraseña hasheada del usuario
+    userType: userType || "usuario", // el tipo de usuario, si no se especifica se asigna "usuario"
+    isVerified: false, // inicialmente el usuario no está verificado
   });
+  // guardamos el nuevo usuario en la base de datos
   await newUser.save();
 
-  return { ok: true, user: newUser };
+  return { ok: true, user: newUser }; // devolvemos un resultado con ok: true
 };

@@ -1,5 +1,6 @@
-import nodemailer from "nodemailer";
+import nodemailer from "nodemailer"; // nodemailer para enviar correos electrónicos
 
+// Función para construir el HTML del correo de verificación
 const buildVerificationEmailHtml = (verificationCode, otpUrl) => `
 <!DOCTYPE html>
 <html lang="es">
@@ -74,23 +75,26 @@ const buildVerificationEmailHtml = (verificationCode, otpUrl) => `
 </html>
 `;
 
+// Función para enviar el correo de verificación
 const sendEmail = async (
-  senderEmail,
-  senderPassword,
-  recipientEmail,
-  verificationCode,
-  otpUrl,
+  senderEmail, // correo electrónico del remitente
+  senderPassword, // contraseña del remitente
+  recipientEmail, // correo electrónico del destinatario
+  verificationCode, // código de verificación a incluir en el correo
+  otpUrl, // URL a la que el usuario debe ir para verificar su cuenta
 ) => {
   const transporter = nodemailer.createTransport({
     service: "gmail",
-    auth: {
+    auth: { // autenticación con el correo y contraseña del remitente
       user: senderEmail,
       pass: senderPassword,
     },
   });
 
+  // construimos el HTML del correo usando la función buildVerificationEmailHtml y los parámetros de código de verificación y URL de verificación
   const html = buildVerificationEmailHtml(verificationCode, otpUrl);
 
+  // opciones del correo
   const mailOptions = {
     from: senderEmail,
     to: recipientEmail,
@@ -99,7 +103,7 @@ const sendEmail = async (
     html,
   };
 
-  return transporter.sendMail(mailOptions);
+  return transporter.sendMail(mailOptions); // enviamos el correo
 };
 
-export default sendEmail;
+export default sendEmail; // exportamos la función para usarla fuera
