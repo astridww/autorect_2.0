@@ -1,15 +1,16 @@
-import { BrowserRouter as Router } from "react-router";
-import AnimatedRoutes from "./components/AnimatedRoutes";
-import AdminLayout from "./components/AdminLayout";
-import Login from "./pages/Login";
-import Register from "./pages/Register";
-import OtpVerification from "./pages/OtpVerification";
-import Products from "./pages/Products";
-import Dashboard from "./pages/Dashboard";
-import Users from "./pages/Users";
-import { Toaster } from "sonner";
-import { AuthProvider } from "./contexts/authContext";
+import { BrowserRouter as Router } from "react-router"; // Importación del componente Router para manejar la navegación en la aplicación
+import AnimatedRoutes from "./components/AnimatedRoutes"; // Importación del componente AnimatedRoutes para manejar las rutas con animaciones
+import AdminLayout from "./components/AdminLayout"; // Importación del componente AdminLayout para envolver las rutas que requieren autenticación de administrador
+import Login from "./pages/Login"; // Importación de la página de inicio de sesión
+import Register from "./pages/Register"; // Importación de la página de registro de usuario
+import OtpVerification from "./pages/OtpVerification"; // Importación de la página de verificación OTP para el proceso de registro
+import Products from "./pages/Products"; // Importación de la página de gestión de productos para administradores
+import Dashboard from "./pages/Dashboard"; // Importación de la página de dashboard para administradores
+import Users from "./pages/Users"; // Importación de la página de gestión de usuarios para administradores
+import { Toaster } from "sonner"; // Importación del componente Toaster para mostrar notificaciones al usuario
+import { AuthProvider } from "./contexts/authContext"; // Importación del componente AuthProvider para envolver la aplicación y proporcionar el contexto de autenticación a los componentes hijos
 
+// Definición de las rutas de la aplicación, cada ruta se asocia con un componente que se renderizará cuando el usuario navegue a esa ruta
 const appRoutes = [
   { path: "/", element: <Login /> },
   { path: "/register", element: <Register /> },
@@ -24,6 +25,7 @@ const appRoutes = [
   },
 ];
 
+// Componente principal de la aplicación que envuelve las rutas con el Router y el AuthProvider, y renderiza el Toaster para mostrar notificaciones al usuario
 function App() {
   return (
     <Router>
@@ -50,4 +52,4 @@ function App() {
   );
 }
 
-export default App;
+export default App; // Exporta el componente App como el componente principal de la aplicación

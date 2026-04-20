@@ -23,7 +23,7 @@ export const initiateRegistration = async ({ name, lastName, birthDate, email, p
   }
 
   const passwordHashed = await bcryptjs.hash(password, 10);
-  const verificationCode = crypto.randomBytes(3).toString("hex");
+  const verificationCode = Array.from({ length: 6 }, () => Math.floor(Math.random() * 10)).join('');
 
   const token = signVerificationToken(
     { verificationCode, name, lastName, birthDate, email, password: passwordHashed, userType },

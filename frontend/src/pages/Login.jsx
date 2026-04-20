@@ -1,34 +1,35 @@
-import { Link, useNavigate } from "react-router";
-import { useState } from "react";
-import { Button, buttonVariants } from "@/components/ui/button";
-import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
-import { Input } from "@/components/ui/input";
-import { Label } from "@/components/ui/label";
-import { useAuth } from "@/hooks/useAuth";
+import { Link, useNavigate } from "react-router"; // Importación de hooks y componentes necesarios para la funcionalidad de inicio de sesión y navegación
+import { useState } from "react"; // Importación de useState para manejar el estado local del formulario de inicio de sesión
+import { Button, buttonVariants } from "@/components/ui/button"; // Importación de componentes de botón personalizados para la interfaz de usuario
+import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card"; // Importación de componentes de tarjeta personalizados para la interfaz de usuario
+import { Input } from "@/components/ui/input"; // Importación de componente de entrada personalizado para la interfaz de usuario
+import { Label } from "@/components/ui/label"; // Importación de componente de etiqueta personalizado para la interfaz de usuario
+import { useAuth } from "@/hooks/useAuth"; // Importación de hook personalizado para manejar la autenticación del usuario
 
+// Componente de inicio de sesión que maneja la autenticación del usuario y la navegación al dashboard
 function Login() {
-  const navigate = useNavigate();
-  const { login, loading } = useAuth();
-  const [email, setEmail] = useState("");
-  const [password, setPassword] = useState("");
+  const navigate = useNavigate(); // Hook para manejar la navegación programática
+  const { login, loading } = useAuth(); // Hook personalizado para manejar la autenticación del usuario
+  const [email, setEmail] = useState(""); // Estado local para almacenar el correo electrónico ingresado por el usuario
+  const [password, setPassword] = useState(""); // Estado local para almacenar la contraseña ingresada por el usuario
 
-
+  // Función para manejar el envío del formulario de inicio de sesión
   const handleSubmit = async (event) => {
     event.preventDefault();
 
-    if (!email.trim() || !password.trim()) {
+    if (!email.trim() || !password.trim()) { // Validación básica para asegurarse de que el correo electrónico y la contraseña no estén vacíos
       return;
     }
 
-    const ok = await login(email.trim(), password);
+    const ok = await login(email.trim(), password); // Llamada a la función de inicio de sesión del hook personalizado
     if (!ok) {
       return;
     }
 
-    navigate("/dashboard");
+    navigate("/dashboard"); // Navegación al dashboard si el inicio de sesión es exitoso
   };
 
-  return (
+  return ( // Renderizado del formulario de inicio de sesión con estilos personalizados y enlaces para crear una cuenta nueva
     <section className="relative min-h-screen overflow-hidden bg-[#1F1F1F] text-white">
       <div className="pointer-events-none absolute inset-0" style={{background: "radial-gradient(circle at 20% 18%, rgba(130,39,39,0.35), transparent 38%)"}} />
 

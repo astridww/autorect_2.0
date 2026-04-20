@@ -1,18 +1,17 @@
-import { useCallback, useEffect, useMemo, useState } from "react";
-import { Activity, Box, Search, ShieldCheck, Users } from "lucide-react";
-import { Bar, BarChart, CartesianGrid, Line, LineChart, XAxis, YAxis } from "recharts";
-import { Badge } from "@/components/ui/badge";
-import { Button } from "@/components/ui/button";
-import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
-import { ChartContainer, ChartTooltip, ChartTooltipContent } from "@/components/ui/chart";
-import { Input } from "@/components/ui/input";
-import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from "@/components/ui/table";
-import { useAuth } from "@/hooks/useAuth";
+import { useCallback, useEffect, useMemo, useState } from "react"; // React hooks para manejar estado, efectos secundarios y memorizar valores
+import { Activity, Box, ShieldCheck, Users } from "lucide-react"; // Iconos de lucide-react
+import { Bar, BarChart, CartesianGrid, Line, LineChart, XAxis, YAxis } from "recharts"; // Componentes de gráficos de recharts
+import { Badge } from "@/components/ui/badge"; // Componente de badge
+import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card"; // Componentes de card
+import { ChartContainer, ChartTooltip, ChartTooltipContent } from "@/components/ui/chart"; // Componentes personalizados para gráficos y tooltips
+import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from "@/components/ui/table"; // Componentes de tabla
+import { useAuth } from "@/hooks/useAuth"; // Hook personalizado para autenticación
 
-const TOKEN_KEY = "accessToken";
+const TOKEN_KEY = "accessToken"; // Clave para almacenar el token de acceso en localStorage
 
-const getStoredToken = () => localStorage.getItem(TOKEN_KEY) || sessionStorage.getItem(TOKEN_KEY);
+const getStoredToken = () => localStorage.getItem(TOKEN_KEY) || sessionStorage.getItem(TOKEN_KEY); // Función para obtener el token almacenado en localStorage
 
+// Funciones de normalización para asegurar que los datos tengan un formato consistente
 const normalizeUser = (user = {}) => ({
   id: user._id || user.id || "",
   name: user.name || "",
@@ -22,6 +21,7 @@ const normalizeUser = (user = {}) => ({
   isVerified: Boolean(user.isVerified),
 });
 
+// Normalización de productos para asegurar que los datos tengan un formato consistente
 const normalizeProduct = (product = {}) => ({
   id: product._id || product.id || "",
   name: product.name || "",
@@ -31,52 +31,55 @@ const normalizeProduct = (product = {}) => ({
   createdAt: product.createdAt || null,
 });
 
+// Función para convertir una fecha a su representación de mes corto en español
 const toShortMonth = (date) =>
   date.toLocaleDateString("es-SV", {
     month: "short",
   });
 
+  // Componente principal del dashboard que muestra estadísticas y actividad reciente
 function Dashboard() {
-  const { API, logout } = useAuth();
-  const [loading, setLoading] = useState(true);
-  const [error, setError] = useState("");
-  const [users, setUsers] = useState([]);
-  const [products, setProducts] = useState([]);
-  const [search, setSearch] = useState("");
+  const { API, logout } = useAuth(); // Obtener la URL de la API y la función de logout desde el hook de autenticación
+  const [loading, setLoading] = useState(true); // Estado para indicar si los datos están cargando
+  const [error, setError] = useState(""); // Estado para almacenar mensajes de error
+  const [users, setUsers] = useState([]); // Estado para almacenar la lista de usuarios
+  const [products, setProducts] = useState([]); // Estado para almacenar la lista de productos
+  const [search, setSearch] = useState(""); // Estado para almacenar el término de búsqueda en la actividad reciente
 
-  const fetchDashboardData = useCallback(async () => {
-    setLoading(true);
-    setError("");
+  const fetchDashboardData = useCallback(async () => { // Función para obtener los datos del dashboard desde la API
+    setLoading(true); // Indicar que los datos están cargando
+    setError(""); // Limpiar cualquier mensaje de error previo
 
     try {
-      const token = getStoredToken();
-      if (!token) {
+      const token = getStoredToken(); // Obtener el token de acceso almacenado
+      if (!token) { // Si no hay token, cerrar sesión y salir
         await logout({ reason: "expired", callApi: false });
         return;
       }
-
+      // Configurar los encabezados de la solicitud con el token de acceso
       const headers = {
         "Content-Type": "application/json",
         Authorization: `Bearer ${token}`,
       };
-
+      // Realizar solicitudes simultáneas para obtener usuarios y productos
       const [usersRes, productsRes] = await Promise.all([
         fetch(`${API}/users`, { headers, credentials: "include" }),
         fetch(`${API}/products`, { headers, credentials: "include" }),
       ]);
-
+      // Si alguna de las respuestas indica que el token ha expirado, cerrar sesión y salir
       if (usersRes.status === 401 || productsRes.status === 401) {
         await logout({ reason: "expired", callApi: false });
         return;
       }
-
+      // Intentar parsear las respuestas como JSON, manejando cualquier error
       const usersPayload = await usersRes.json().catch(() => ({}));
       const productsPayload = await productsRes.json().catch(() => ({}));
 
+      // Si alguna de las respuestas no es exitosa, lanzar un error
       if (!usersRes.ok || !productsRes.ok) {
         throw new Error(usersPayload?.message || productsPayload?.message || "No se pudieron cargar los datos del dashboard");
       }
-
+      // Normalizar los datos de usuarios y productos para asegurar que tengan un formato consistente
       const usersData = Array.isArray(usersPayload?.data)
         ? usersPayload.data.map(normalizeUser)
         : [];
@@ -84,54 +87,58 @@ function Dashboard() {
         ? productsPayload.data.map(normalizeProduct)
         : [];
 
-      setUsers(usersData);
-      setProducts(productsData);
+      setUsers(usersData); // Actualizar el estado con los datos de usuario
+      setProducts(productsData); // Actualizar el estado con los datos de productos
     } catch (requestError) {
       setError(requestError.message || "Error al cargar dashboard");
-    } finally {
+    } finally { // Indicar que la carga ha finalizado
       setLoading(false);
     }
-  }, [API, logout]);
+  }, [API, logout]); // Dependencias para memorizar la función de obtención de datos
 
+  // Efecto para cargar los datos del dashboard cuando el componente se monta o cuando la función de obtención de datos cambia
   useEffect(() => {
     fetchDashboardData();
   }, [fetchDashboardData]);
 
+  // Cálculos para estadísticas del dashboard
   const verifiedUsers = users.filter((user) => user.isVerified).length;
   const lowStockProducts = products.filter((product) => product.stock <= 5).length;
   const avgStock = products.length
     ? Math.round(products.reduce((acc, product) => acc + product.stock, 0) / products.length)
     : 0;
 
+    // Memorización de las filas de actividad reciente
   const activityRows = useMemo(() => {
     const userRows = users.map((user) => ({
-      id: `U-${user.id}`,
-      type: "Usuario",
-      title: `${user.name} ${user.lastName}`.trim() || user.email,
-      subtitle: user.email,
-      createdAt: user.createdAt,
-      status: user.isVerified ? "Verificado" : "Pendiente",
+      id: `U-${user.id}`, // Prefijo para diferenciar entre usuarios y productos
+      type: "Usuario", // Tipo de actividad
+      title: `${user.name} ${user.lastName}`.trim() || user.email, // Título para mostrar en la actividad
+      subtitle: user.email, // Detalle adicional para mostrar en la actividad
+      createdAt: user.createdAt, // Fecha de creación para ordenar la actividad
+      status: user.isVerified ? "Verificado" : "Pendiente", // Estado del usuario para mostrar en la actividad
     }));
 
     const productRows = products.map((product) => ({
-      id: `P-${product.id}`,
-      type: "Producto",
-      title: product.name,
-      subtitle: product.description || "Sin descripcion",
-      createdAt: product.createdAt,
-      status: product.stock <= 5 ? "Stock bajo" : "Disponible",
+      id: `P-${product.id}`, // Prefijo para diferenciar entre usuarios y productos
+      type: "Producto", // Tipo de actividad
+      title: product.name, // Título para mostrar en la actividad
+      subtitle: product.description || "Sin descripcion", // Detalle adicional para mostrar en la actividad
+      createdAt: product.createdAt, // Fecha de creación para ordenar la actividad
+      status: product.stock <= 5 ? "Stock bajo" : "Disponible", // Estado del producto para mostrar en la actividad
     }));
-
+    // Combinar las filas de usuarios y productos, y ordenarlas por fecha de creación de manera descendente
     return [...userRows, ...productRows]
       .sort((a, b) => new Date(b.createdAt || 0) - new Date(a.createdAt || 0));
   }, [products, users]);
 
+  // Memorización de las filas de actividad filtradas según el término de búsqueda
   const filteredActivity = useMemo(() => {
     const term = search.trim().toLowerCase();
     if (!term) {
       return activityRows.slice(0, 12);
     }
-
+    // Filtrar las filas de actividad para incluir solo aquellas que coincidan con el término de búsqueda en cualquiera de sus campos relevantes
     return activityRows
       .filter((row) =>
         `${row.title} ${row.subtitle} ${row.type} ${row.status}`
@@ -141,6 +148,7 @@ function Dashboard() {
       .slice(0, 12);
   }, [activityRows, search]);
 
+  // Memorización de la tendencia mensual
   const usersMonthlyTrend = useMemo(() => {
     const months = Array.from({ length: 6 }, (_, index) => {
       const date = new Date();
@@ -150,6 +158,7 @@ function Dashboard() {
       return date;
     });
 
+    // Para cada mes, contar cuántos usuarios se crearon en ese mes
     return months.map((monthDate) => {
       const key = `${monthDate.getFullYear()}-${monthDate.getMonth()}`;
       const count = users.filter((user) => {
@@ -165,20 +174,22 @@ function Dashboard() {
         total: count,
       };
     });
-  }, [users]);
+  }, [users]); // Dependencia para recalcular la tendencia mensual
 
+  // Memorización de los productos con más stock
   const topStockProducts = useMemo(
     () =>
       [...products]
         .sort((a, b) => b.stock - a.stock)
         .slice(0, 5)
         .map((product) => ({
-          label: product.name.length > 12 ? `${product.name.slice(0, 12)}...` : product.name,
-          stock: product.stock,
+          label: product.name.length > 12 ? `${product.name.slice(0, 12)}...` : product.name, // Etiqueta para mostrar en el gráfico
+          stock: product.stock, // Valor de stock para mostrar en el gráfico
         })),
-    [products],
+    [products], // Dependencia para recalcular los productos con más stock
   );
 
+  // Renderizado del componente del dashboard con estadísticas, gráficos y actividad reciente
   return (
     <div className="space-y-4 pb-4">
 
