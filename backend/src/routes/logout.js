@@ -8,7 +8,7 @@ const router = express.Router(); // creamos un router de Express
 const upload = multer(); // configuramos multer
 
 router
-  .route("/")
+  .route("/") // definimos la ruta raíz para login/logout
   .post(upload.none(), loginController.logout);
 
   export default router; // exportamos el router para usarlo en app.js

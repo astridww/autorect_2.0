@@ -7,7 +7,7 @@ const userSchema = new Schema( // definimos el esquema de usuarios con los campo
     birthDate: { type: Date, required: true }, // la fecha de nacimiento del usuario es un Date obligatorio
     email: { type: String, required: true }, // el correo electrónico del usuario es un string obligatorio
     password: { type: String, required: true, minlength: 8 }, // la contraseña del usuario es un string obligatorio con una longitud mínima de 8 caracteres
-    userType: {
+    userType: { // el tipo de usuario es un string que puede ser "admin", "supervisor", "vendedor" o "usuario", con un valor por defecto de "usuario"
       type: String,
       enum: ["admin", "supervisor", "vendedor", "usuario"],
       default: "usuario",
