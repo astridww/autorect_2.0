@@ -1,5 +1,8 @@
 import app from "./app.js"; // importamos la aplicación Express
+import dotenv from "dotenv";
 import "./database.js"; // importamos la conexión a la base de datos
+
+dotenv.config();
 
 function startServer(port) { // función para iniciar el servidor con PORT
   const server = app.listen(port, () => {
@@ -18,7 +21,7 @@ function startServer(port) { // función para iniciar el servidor con PORT
 }
 
 // Ejecuta el servidor con el puerto configurado.
-const port = Number(process.env.PORT) || 3000;
+const port = Number(process.env.PORT) || 4000;
 startServer(port);
 
 // Manejamos errores no capturados y rechazos no manejados

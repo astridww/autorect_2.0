@@ -9,8 +9,8 @@ import { Label } from "@/components/ui/label"; // Importación de componente de 
 // Componente de verificación OTP que maneja la validación del código OTP ingresado por el usuario y la funcionalidad de reenvío del código OTP
 function OtpVerification() {
   const navigate = useNavigate(); // Hook para manejar la navegación programática
-  const API_VERIFY = "http://localhost:3000/api/register/verifyCodeEmail"; // URL del endpoint para verificar el código OTP
-  const API_REGISTER = "http://localhost:3000/api/register"; // URL del endpoint para registrar un nuevo usuario (utilizado para reenviar el código OTP)
+  const API_VERIFY = "http://localhost:4000/api/register/verifyCodeEmail"; // URL del endpoint para verificar el código OTP
+  const API_REGISTER = "http://localhost:4000/api/register"; // URL del endpoint para registrar un nuevo usuario (utilizado para reenviar el código OTP)
   const [otpCode, setOtpCode] = useState(""); // Estado local para almacenar el código OTP ingresado por el usuario
   const [isSubmitting, setIsSubmitting] = useState(false); // Estado local para manejar el estado de envío del formulario de verificación OTP
   const [isResending, setIsResending] = useState(false); // Estado local para manejar el estado de reenvío del código OTP
